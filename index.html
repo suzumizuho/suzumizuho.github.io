@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>白露の庭 — 創作と日々の記録</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+<a class="brand" href="index.html">白露の庭</a>
+<nav class="nav"><a href="novel/">作品</a><a href="blog/">ブログ</a><a href="about.html">About</a></nav>
+</header>
+<main>
+<section class="hero">
+  <div class="hero-inner">
+    <div class="symbol">☾</div>
+    <h1>白露の庭</h1>
+    <p class="subtitle">創作と、日々の記録。</p>
+    <a class="cta" href="novel/story-01.html">「コインランドリー」を読む</a>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title"><span>WORKS</span>novels &amp; poems</h2>
+  <div class="cards" id="latest-works">
+    <p class="loading">作品を読み込んでいます……</p>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section-title"><span>BLOG</span>ブログ</h2>
+  <div class="cards" id="latest-blog">
+    <p class="loading">記事を読み込んでいます……</p>
+  </div>
+</section>
+</main>
+<footer class="footer">珠洲瑞帆　✦　白露の庭</footer>
+
+<script>
+// GitHub上のフォルダから最新の作品2つ・ブログ記事2つを自動取得します。
+const REPO_API = 'https://api.github.com/repos/suzumizuho/suzumizuho.github.io/contents/';
+const RAW_BASE = 'https://raw.githubusercontent.com/suzumizuho/suzumizuho.github.io/main/';
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+function textFromDoc(doc, selector) {
+  const el = doc.querySelector(selector);
+  return el ? el.textContent.trim() : '';
+}
+
+function cleanTitle(title) {
+  return title.replace(/\s*[—-]\s*白露の庭\s*$/, '').trim();
+}
+
+async function getDirectory(folder) {
+  const response = await fetch(REPO_API + folder, { headers: { 'Accept': 'application/vnd.github+json' } });
+  if (!response.ok) throw new Error('GitHub API error: ' + response.status);
+  return response.json();
+}
+
+async function getPageInfo(path, type) {
+  const response = await fetch(RAW_BASE + path);
+  if (!response.ok) throw new Error('Page fetch error: ' + response.status);
+  const html = await response.text();
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  const title = cleanTitle(textFromDoc(doc, 'title') || textFromDoc(doc, 'h1') || path);
+  const description = type === 'work'
+    ? textFromDoc(doc, '.story p')
+    : textFromDoc(doc, '.story p') || textFromDoc(doc, '.blog-list p');
+  const label = type === 'work'
+    ? (textFromDoc(doc, '.chapter') || '作品')
+    : (textFromDoc(doc, '.page-head p') || path.split('/').pop().replace('.html',''));
+  return { title, description, label, path };
+}
+
+function renderCards(container, items, type) {
+  container.innerHTML = items.map(item => `
+    <a class="card" href="${escapeHtml(item.path)}">
+      <small>${escapeHtml(item.label)}</small>
+      <h3>${escapeHtml(item.title)}</h3>
+      <p>${escapeHtml(item.description)}</p>
+    </a>
+  `).join('');
+}
+
+async function loadLatest() {
+  const workContainer = document.getElementById('latest-works');
+  const blogContainer = document.getElementById('latest-blog');
+  try {
+    const [novelFiles, blogFiles] = await Promise.all([
+      getDirectory('novel'),
+      getDirectory('blog')
+    ]);
+
+    // story-01.html, story-02.html…の番号を新しい順として扱います。
+    const works = novelFiles
+      .filter(file => /^story-\d+\.html$/i.test(file.name))
+      .sort((a, b) => {
+        const na = Number(a.name.match(/(\d+)/)[1]);
+        const nb = Number(b.name.match(/(\d+)/)[1]);
+        return nb - na;
+      })
+      .slice(0, 2);
+
+    // ブログはファイル名のYYYYMMDDを新しい順として扱います。
+    const blogs = blogFiles
+      .filter(file => /^\d{8}\.html$/i.test(file.name))
+      .sort((a, b) => b.name.localeCompare(a.name))
+      .slice(0, 2);
+
+    const [workItems, blogItems] = await Promise.all([
+      Promise.all(works.map(file => getPageInfo('novel/' + file.name, 'work'))),
+      Promise.all(blogs.map(file => getPageInfo('blog/' + file.name, 'blog')))
+    ]);
+
+    renderCards(workContainer, workItems, 'work');
+    renderCards(blogContainer, blogItems, 'blog');
+  } catch (error) {
+    console.error(error);
+    workContainer.innerHTML = '<p class="loading">作品を読み込めませんでした。作品一覧からご覧ください。</p>';
+    blogContainer.innerHTML = '<p class="loading">記事を読み込めませんでした。ブログ一覧からご覧ください。</p>';
+  }
+}
+
+loadLatest();
+</script>
+</body>
+</html>
