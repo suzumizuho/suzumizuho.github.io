@@ -107,7 +107,7 @@ async function loadLatest() {
 
     // ブログはファイル名のYYYYMMDDを新しい順として扱います。
     const blogs = blogFiles
-      .filter(file => /^\d{8}\.html$/i.test(file.name))
+      .filter(file => /^\d{8}(?:-\d+)?\.html$/i.test(file.name))
       .sort((a, b) => b.name.localeCompare(a.name))
       .slice(0, 2);
 
