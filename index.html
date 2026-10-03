@@ -108,7 +108,22 @@ async function loadLatest() {
     // ブログはファイル名のYYYYMMDDを新しい順として扱います。
     const blogs = blogFiles
       .filter(file => /^\d{8}(?:-\d+)?\.html$/i.test(file.name))
-      .sort((a, b) => b.name.localeCompare(a.name))
+      .sort((a, b) => {
+  const ma = a.name.match(/^(\d{8})(?:-(\d+))?/);
+  const mb = b.name.match(/^(\d{8})(?:-(\d+))?/);
+
+         const dateA = ma[1];
+  const dateB = mb[1];
+        
+  if (dateA !== dateB) {
+    return dateB.localeCompare(dateA);
+  }
+
+    const numA = Number(ma[2] || 0);
+  const numB = Number(mb[2] || 0);
+
+        return numB - numA;
+})
       .slice(0, 2);
 
     const [workItems, blogItems] = await Promise.all([
