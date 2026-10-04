@@ -63,8 +63,9 @@
         const res = await fetch(file.download_url);
         const doc = new DOMParser().parseFromString(await res.text(), "text/html");
         const title = doc.querySelector("h1")?.textContent.trim() || file.name.replace(/\.html$/i, "");
-        const type = doc.querySelector(".work-type")?.textContent.trim() ||
-                     doc.querySelector("small")?.textContent.trim() || "掌編";
+        const type = doc.querySelector(".chapter")?.textContent.trim() ||
+             doc.querySelector(".work-type")?.textContent.trim() ||
+             doc.querySelector("small")?.textContent.trim() || "掌編";
         const description = doc.querySelector('meta[name="description"]')?.content.trim() || "";
 
         return `<a class="card" href="${file.name}">
