@@ -68,8 +68,9 @@ async function getPageInfo(path, type) {
   const doc = new DOMParser().parseFromString(html, 'text/html');
   const title = cleanTitle(textFromDoc(doc, 'title') || textFromDoc(doc, 'h1') || path);
   const description = type === 'work'
-    ? textFromDoc(doc, '.story p')
-    : textFromDoc(doc, '.story p') || textFromDoc(doc, '.blog-list p');
+  ? (doc.querySelector('meta[name="top-description"]')?.content.trim() ||
+     textFromDoc(doc, '.story p'))
+  : textFromDoc(doc, '.story p') || textFromDoc(doc, '.blog-list p');
   const label = type === 'work'
     ? (textFromDoc(doc, '.chapter') || '作品')
     : (textFromDoc(doc, '.page-head p') || path.split('/').pop().replace('.html',''));
