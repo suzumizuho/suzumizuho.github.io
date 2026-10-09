@@ -10,3 +10,21 @@ a{color:inherit;text-decoration:none}.site-header{width:min(1080px,calc(100% - 4
   text-indent: 0;
   margin-bottom: 2em;
 }
+.blog-list img,
+.blog-article img,
+figure img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+figure {
+  margin: 2em 0;
+}
+
+figcaption {
+  margin-top: 0.6em;
+  font-size: 0.85em;
+  color: #9aa8bb;
+  text-align: center;
+}
