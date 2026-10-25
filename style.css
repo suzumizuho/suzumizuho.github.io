@@ -28,3 +28,14 @@ figcaption {
   color: #9aa8bb;
   text-align: center;
 }
+.poem-image {
+  margin: 2em auto;
+  text-align: center;
+}
+
+.poem-image img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0 auto;
+}
