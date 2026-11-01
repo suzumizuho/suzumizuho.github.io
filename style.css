@@ -45,3 +45,7 @@ figcaption {
 .poem-excerpt {
   line-height: 2;
 }
+.dialogue {
+  margin-top: 0;
+  margin-bottom: 0;
+}
