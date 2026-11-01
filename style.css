@@ -55,3 +55,6 @@ figcaption {
   margin-bottom: 0;
   text-indent: 0;
 }
+.story p.dialogue {
+  text-indent: 0;
+}
