@@ -42,3 +42,6 @@ figcaption {
 .dialogue {
   text-indent: 0;
 }
+.poem-excerpt {
+  line-height: 2;
+}
