@@ -58,3 +58,8 @@ figcaption {
 .story p.dialogue {
   text-indent: 0;
 }
+.story p.dialogue {
+  text-indent: 0 !important;
+  padding-left: 0 !important;
+  margin-left: 0 !important;
+}
