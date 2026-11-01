@@ -39,3 +39,6 @@ figcaption {
   height: auto;
   margin: 0 auto;
 }
+.dialogue {
+  text-indent: 0;
+}
