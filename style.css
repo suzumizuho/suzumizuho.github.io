@@ -49,3 +49,9 @@ figcaption {
   margin-top: 0;
   margin-bottom: 0;
 }
+.story p.dialogue {
+  line-height: 1.5;
+  margin-top: 0;
+  margin-bottom: 0;
+  text-indent: 0;
+}
